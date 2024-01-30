@@ -1,15 +1,15 @@
 import { asyncThunkCreator } from "@reduxjs/toolkit";
-import { initialState } from "./types";
+import { UserinitialState } from "./types";
 import { buildCreateSlice } from "@reduxjs/toolkit/react";
 
-const createSliceWithThunks = buildCreateSlice({ creators: { asyncThunk: asyncThunkCreator } });
+const createSlice = buildCreateSlice({ creators: { asyncThunk: asyncThunkCreator } });
 
-const initialState: initialState = {
+const initialState: UserinitialState = {
     jwt: null,
     name: null,
 };
 
-export const userSlice = createSliceWithThunks({
+export const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: (create) => ({

@@ -7,7 +7,9 @@ const Layout = ({ headerSlot, bottomSlot, announcementSlot }: LayoutProps) => {
         <Container>
             {announcementSlot}
             {headerSlot}
-            <Outlet />
+            <main>
+                <Outlet />
+            </main>
             {bottomSlot}
         </Container>
     );

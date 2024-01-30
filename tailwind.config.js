@@ -7,17 +7,15 @@ export default {
                 "primary-t": "#141C24",
                 "secondary-t": "#344051",
             },
-            invert: {
-                50: ".5",
-                30: ".3",
-                25: ".25",
+            keyframes: {
+                spinner: {
+                    "0%": { transform: "translate(-50%, -50%) rotate(0)" },
+                    "100%": { transform: "translate(-50%, -50%) rotate(360deg)" },
+                },
             },
-            sepia: {
-                85: ".85"
+            animation: {
+                spin: "spinner .5s linear infinite",
             },
-            saturate: {
-                20: ".2"
-            }
         },
     },
     plugins: [],
