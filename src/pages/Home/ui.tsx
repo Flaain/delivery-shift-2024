@@ -6,7 +6,7 @@ import getImageUrl from "@/utils/helpers/getImageUrl";
 const Home = () => {
 
     return (
-        <section className='px-4 flex items-center h-[calc(100vh-80px)] bg-home-pattern bg-cover bg-no-repeat'>
+        <section className='px-4 flex items-center h-[calc(100vh-80px)] bg-home-pattern bg-cover bg-no-repeat '>
             <Container>
                 <div className='flex items-center justify-between gap-8'>
                     <div className='flex flex-col gap-14'>

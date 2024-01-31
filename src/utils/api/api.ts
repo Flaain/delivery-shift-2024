@@ -1,4 +1,4 @@
-import { IPoint } from "../redux/calculator/types";
+import { IPackage, IPoint } from "../redux/calculator/types";
 import { ApiError } from "./error";
 import { IApiData, IApiMethodParams, IBase } from "./types";
 
@@ -18,8 +18,13 @@ export class API {
         return data;
     }
 
-    async getPoints<T>({ endpoint, signal }: IApiMethodParams<T> = { endpoint: "delivery/points" }) {
+    async getPoints<T>({ endpoint = "delivery/points", signal }: IApiMethodParams<T>) {
         const response = await fetch(this._baseUrl + endpoint, { signal });
         return this._checkResponse<Array<IPoint>, "points">(response, endpoint);
+    }
+
+    async getPackages<T>({ endpoint = "delivery/package/types", signal }: IApiMethodParams<T>) {
+        const response = await fetch(this._baseUrl + endpoint, { signal });
+        return this._checkResponse<Array<IPackage>, "packages">(response, endpoint);
     }
 }

@@ -10,7 +10,7 @@ export type IApiData<T, K extends string> = {
 };
 
 export interface IApiMethodParams<T> {
-    endpoint: string;
+    endpoint?: string;
     signal?: AbortSignal;
     body?: T;
     headers?: Headers;

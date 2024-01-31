@@ -2,7 +2,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { buildCreateSlice } from "@reduxjs/toolkit/react";
 import { asyncThunkCreator } from "@reduxjs/toolkit";
 
-import { ICalculatorInitialState, IPoint } from "./types";
+import { ICalculatorData, ICalculatorInitialState, IPoint } from "./types";
 import { api } from "@/utils/api";
 import { ApiError } from "@/utils/api/error";
 
@@ -10,7 +10,11 @@ const createSlice = buildCreateSlice({ creators: { asyncThunk: asyncThunkCreator
 
 const initialState: ICalculatorInitialState = {
     points: [],
+    packages: [],
+    to: null,
+    from: null,
     status: 'none',
+    packageDetails: null,
     error: null,
 };
 
@@ -18,31 +22,34 @@ export const calculatorSlice = createSlice({
     name: "calculator",
     initialState,
     reducers: (create) => ({
-        getPoints: create.asyncThunk(async (controller: AbortController, { rejectWithValue }) => {
-            try {
-                const { points } = await api.getPoints({ endpoint: "delivery/points", signal: controller.signal });
-                return points;
-            } catch (error) {
-                !(error instanceof DOMException) && console.error(error);
-                return rejectWithValue((error as ApiError).message); // <-- сомнительно, но окээээй...
-                /* сделал так, потому что редакс жалуется, если вернуть весь объект error - "A non-serializable value was detected in an action" */
-            }
+        getCalculatorData: create.asyncThunk(async (controller: AbortController) => {
+            const [{ points }, { packages }] = await Promise.all([api.getPoints({ signal: controller.signal }), api.getPackages({ signal: controller.signal })]);
+            return { points, packages };
         },
         {
             pending: (state) => {
                 state.status = 'loading';
             },
-            fulfilled: (state, { payload }: PayloadAction<Array<IPoint>>) => {
-                state.points = payload;
+            fulfilled: (state, { payload }: PayloadAction<ICalculatorData>) => {
+                state.points = payload.points;
+                state.packages = payload.packages;
+                state.from = payload.points[0];
+                state.to = payload.points[1];
                 state.status = 'success'
             },
             rejected: (state, { payload }: PayloadAction<unknown>) => {
-                state.status = 'error';
-                payload instanceof ApiError && (state.error = payload.message);
-            },
-            settled: (state) => {
-                state.status = 'none';
+                // не могу понять почему при rejected, payload === undefined. Возможно что-то неправильно в API классе где я ошибку выкидываю
+                if (payload instanceof ApiError) { 
+                    state.error = payload.message;
+                    state.status = 'error';
+                }
             }
+        }),
+        setFrom: create.reducer((state, { payload }: PayloadAction<IPoint>) => {
+            state.from = payload;
+        }),
+        setTo: create.reducer((state, { payload }: PayloadAction<IPoint>) => {
+            state.to = payload;
         }),
     }),
     selectors: {
@@ -51,5 +58,5 @@ export const calculatorSlice = createSlice({
     },
 });
 
-export const { getPoints } = calculatorSlice.actions;
+export const { getCalculatorData, setFrom, setTo } = calculatorSlice.actions;
 export const { selectSlice, selectPoints } = calculatorSlice.selectors;
