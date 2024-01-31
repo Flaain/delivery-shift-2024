@@ -27,7 +27,7 @@ const Calculator = () => {
     }, []);
 
     return (
-        <div className='px-[72px] py-8 box-border border border-solid shadow-lg border-gray-100 rounded-3xl max-w-[500px] w-full min-h-[500px] relative'>
+        <div className='px-[72px] py-8 box-border border border-solid shadow-lg border-gray-100 rounded-3xl max-w-[500px] w-full min-h-[500px] relative bg-white'>
             <h2 className='text-primary-t text-2xl font-bold'>Рассчитать доставку</h2>
             {statuses[status as keyof typeof statuses]}
         </div>

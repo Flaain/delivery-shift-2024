@@ -16,6 +16,9 @@ export default {
             animation: {
                 spin: "spinner .5s linear infinite",
             },
+            backgroundImage: {
+                "home-pattern": "url('@/utils/assets/home_bg_image.svg')",
+            }
         },
     },
     plugins: [],
