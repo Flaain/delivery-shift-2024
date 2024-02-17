@@ -1,1 +1,1 @@
-export default (name: string) => new URL(`/src/utils/assets/${name}`, import.meta.url).href;
+export const getImageUrl = (name: string) => new URL(`/src/utils/assets/${name}`, import.meta.url).href;

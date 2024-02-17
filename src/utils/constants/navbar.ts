@@ -1,4 +1,4 @@
-export const navbar: Array<{ icon: string; title: string; href?: string }> = [
+export const NAVBAR: Array<{ icon: string; title: string; href?: string }> = [
     {
         title: "Профиль",
         icon: "user.svg",

@@ -1,14 +1,18 @@
-import { Provider } from "react-redux";
-import { router } from "./appRouter";
+import React from "react";
+import { router } from "./router";
 import { RouterProvider } from "react-router-dom";
-import { appStore } from "./utils/redux/store";
+
+import { useAppDispatch } from "./utils/hooks";
+import { getSession } from "./utils/redux/user/slice";
 
 const App = () => {
-    return (
-        <Provider store={appStore}>
-            <RouterProvider router={router} />
-        </Provider>
-    );
+    const dispatch = useAppDispatch();
+
+    React.useEffect(() => {
+        dispatch(getSession(localStorage.getItem("token")));
+    }, []);
+
+    return <RouterProvider router={router} />;
 };
 
 export default App;

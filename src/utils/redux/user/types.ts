@@ -1,4 +1,8 @@
 export interface UserinitialState {
-    jwt: null | string;
-    name: null | string
+    isAuth: boolean;
+    _id: null | string;
+    token: null | string;
+    name: null | string;
+    phone: null | string;
+    isAuthInProgress: boolean;
 }

@@ -1,30 +1,21 @@
-import { IPackage, IPoint } from "../redux/calculator/types";
 import { ApiError } from "./error";
-import { IApiData, IApiMethodParams, IBase } from "./types";
+import { IApiData, IBase } from "./types";
 
 export class API {
-    private _baseUrl: string;
+    protected _baseUrl: string;
+    protected _headers: IBase["headers"];
 
-    constructor({ baseUrl }: IBase) {
+    constructor({ baseUrl, headers }: IBase) {
         this._baseUrl = baseUrl;
+        this._headers = headers;
     }
 
-    private async _checkResponse<T, K extends string>(response: Response, endpoint: string): Promise<IApiData<T, K>> {
+    protected async _checkResponse<T, K extends string>(response: Response): Promise<IApiData<T, K>> {
         const data = await response.json();
 
-        if (!response.ok) throw new ApiError({ message: "Не удалось получить данные", ...data, endpoint });
-        // решил добавить заглушку для "message" на всякий случай
+        if (!response.ok)
+            throw new ApiError({ ...data, message: data.error ?? "Произошла непредвиденная ошибка" });
 
         return data;
-    }
-
-    async getPoints<T>({ endpoint = "delivery/points", signal }: IApiMethodParams<T>) {
-        const response = await fetch(this._baseUrl + endpoint, { signal });
-        return this._checkResponse<Array<IPoint>, "points">(response, endpoint);
-    }
-
-    async getPackages<T>({ endpoint = "delivery/package/types", signal }: IApiMethodParams<T>) {
-        const response = await fetch(this._baseUrl + endpoint, { signal });
-        return this._checkResponse<Array<IPackage>, "packages">(response, endpoint);
     }
 }

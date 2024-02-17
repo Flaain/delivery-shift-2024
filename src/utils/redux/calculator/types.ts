@@ -16,14 +16,23 @@ export interface IPackage {
 
 export type Status = "none" | "loading" | "success" | "error"; 
 
+export interface IOption {
+    id: string;
+    price: number;
+    days: number;
+    name: string;
+    type: string;
+}
+
 export interface ICalculatorInitialState {
     points: Array<IPoint>;
-    from: null | IPoint;
-    to: null | IPoint;
+    senderPoint: null | IPoint;
+    receiverPoint: null | IPoint;
+    options: Array<IOption>;
     packages: Array<IPackage>;
+    packageProp: null | Partial<IPackage>;
     status: Status;
     error: null | string;
-    packageDetails: null | Omit<IPackage, "id" | "name">
 }
 
 export interface ICalculatorData {
