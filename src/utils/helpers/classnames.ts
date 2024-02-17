@@ -1,4 +1,4 @@
-export default (...args: Array<{ [key: string]: boolean } | string | boolean>) => {
+export const cn = (...args: Array<{ [key: string]: boolean } | string | boolean>) => {
     const classNames = [];
 
     for (let i = 0; i < args.length; i += 1) {
@@ -6,6 +6,7 @@ export default (...args: Array<{ [key: string]: boolean } | string | boolean>) =
 
         if (typeof args[i] === "object") {
             const obj = args[i] as { [key: string]: boolean };
+
             Object.keys(obj).forEach((className) => {
                 obj[className] && classNames.push(className);
             });

@@ -1,3 +1,9 @@
-import { API } from "./api";
+import { BaseAPI } from "./baseApi";
+import { CalcAPI } from "./calcApi";
+import { UserAPI } from "./userApi";
 
-export const api = new API({ baseUrl: import.meta.env.VITE_BASE_URL });
+export const api = {
+    calc: new CalcAPI(),
+    user: new UserAPI(),
+    base: new BaseAPI(),
+};

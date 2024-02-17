@@ -1,55 +1,60 @@
+import { ICalculatorData, ICalculatorInitialState, IPackage, IPoint } from "./types";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { buildCreateSlice } from "@reduxjs/toolkit/react";
 import { asyncThunkCreator } from "@reduxjs/toolkit";
+import { buildCreateSlice } from "@reduxjs/toolkit/react";
 
-import { ICalculatorData, ICalculatorInitialState, IPoint } from "./types";
 import { api } from "@/utils/api";
 import { ApiError } from "@/utils/api/error";
 
-const createSlice = buildCreateSlice({ creators: { asyncThunk: asyncThunkCreator } });
-
 const initialState: ICalculatorInitialState = {
     points: [],
+    options: [],
     packages: [],
-    to: null,
-    from: null,
-    status: 'none',
-    packageDetails: null,
+    status: "none",
+    senderPoint: null,
+    receiverPoint: null,
+    packageProp: null,
     error: null,
 };
 
-export const calculatorSlice = createSlice({
+export const calculatorSlice = buildCreateSlice({ creators: { asyncThunk: asyncThunkCreator } })({
     name: "calculator",
     initialState,
-    reducers: (create) => ({
-        getCalculatorData: create.asyncThunk(async (controller: AbortController) => {
-            const [{ points }, { packages }] = await Promise.all([api.getPoints({ signal: controller.signal }), api.getPackages({ signal: controller.signal })]);
-            return { points, packages };
-        },
-        {
-            pending: (state) => {
-                state.status = 'loading';
+    reducers: ({ reducer, asyncThunk }) => ({
+        getCalculatorData: asyncThunk(
+            async (controller: AbortController) => {
+                const [{ points }, { packages }] = await Promise.all([
+                    api.base.getPoints({ signal: controller.signal }),
+                    api.base.getPackages({ signal: controller.signal }),
+                ]);
+
+                return { points, packages };
             },
-            fulfilled: (state, { payload }: PayloadAction<ICalculatorData>) => {
-                state.points = payload.points;
-                state.packages = payload.packages;
-                state.from = payload.points[0];
-                state.to = payload.points[1];
-                state.status = 'success'
+            {
+                pending: (state) => {
+                    state.status = "loading";
+                },
+                fulfilled: (state, { payload }: PayloadAction<ICalculatorData>) => {
+                    state.points = payload.points;
+                    state.packages = payload.packages;
+                    state.status = "success";
+                },
+                rejected: (state, { payload }: PayloadAction<unknown>) => {
+                    if (payload instanceof ApiError) {
+                        state.error = payload.message;
+                        state.status = "error";
+                    }
+                },
             },
-            rejected: (state, { payload }: PayloadAction<unknown>) => {
-                // не могу понять почему при rejected, payload === undefined. Возможно что-то неправильно в API классе где я ошибку выкидываю
-                if (payload instanceof ApiError) { 
-                    state.error = payload.message;
-                    state.status = 'error';
-                }
-            }
+        ),
+        setSenderPoint: reducer((state, { payload }: PayloadAction<IPoint>) => {
+            state.senderPoint = payload;
         }),
-        setFrom: create.reducer((state, { payload }: PayloadAction<IPoint>) => {
-            state.from = payload;
+        setReceiverPoint: reducer((state, { payload }: PayloadAction<IPoint>) => {
+            state.receiverPoint = payload;
         }),
-        setTo: create.reducer((state, { payload }: PayloadAction<IPoint>) => {
-            state.to = payload;
+        setPackage: reducer((state, { payload }: PayloadAction<Partial<IPackage>>) => {
+            state.packageProp = payload;
         }),
     }),
     selectors: {
@@ -58,5 +63,5 @@ export const calculatorSlice = createSlice({
     },
 });
 
-export const { getCalculatorData, setFrom, setTo } = calculatorSlice.actions;
+export const { getCalculatorData, setReceiverPoint, setSenderPoint, setPackage } = calculatorSlice.actions;
 export const { selectSlice, selectPoints } = calculatorSlice.selectors;
